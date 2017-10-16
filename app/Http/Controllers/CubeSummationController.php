@@ -39,10 +39,19 @@ class CubeSummationController extends Controller
                         $aux = explode(" ",$nuevaCadena[1]);
                         $nQuerys = (integer)$aux[1];
                         $newIndex = 2 + $nQuerys;
-                        return $newIndex;
+                    }else{
+                        if ($nuevaCadena[$newIndex]) {
+                            $aux = explode(" ",$nuevaCadena[$newIndex]);
+                            $nQuerys = (integer)$aux[1];
+                            $sizeMatrix = (integer)$aux[0];
+                            $newIndex += $nQuerys+1;
+                        }
                     }
+                }else {
+                    return "La cantidad de querys no puede ser mayor a 1000"; 
                 }
             }
+            return $nuevaCadena[0];
         }
         return $info;
 
