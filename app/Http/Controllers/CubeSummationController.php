@@ -22,6 +22,32 @@ class CubeSummationController extends Controller
             return view('cube.cube', ['results' => '']);
         
     }
+
+    //this obtains input and validate the structure and call other functions to do cubeSumation
+    public function summation($query){
+        $result = array();
+        $validation = 0;
+        $info = explode("\n",$query);
+        $nCases = (integer)$info[0];
+        if (1 <= $nCases && is_int($nCases)){
+            $acum = 0;
+            $nuevaCadena = str_replace("",$info[0],$query);
+            $nuevaCadena = explode("\n",$nuevaCadena);
+            for ($i=0,$index=0,$newIndex=0; $index < $nCases; $index++) { 
+                if ($newIndex <= 1000) {
+                    if ($index == 0) {
+                        $aux = explode(" ",$nuevaCadena[1]);
+                        $nQuerys = (integer)$aux[1];
+                        $newIndex = 2 + $nQuerys;
+                        return $newIndex;
+                    }
+                }
+            }
+        }
+        return $info;
+
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -29,16 +55,15 @@ class CubeSummationController extends Controller
      */
     public function create(Request $request)
     {
-        //
         $query = $request->get('query');
-        //var_dump($query);
-        var_dump($query);
-        
-        return view('cube.cube', array('results'=>$query));
+        $response = $this->summation($query);
+        //response es el valor de la respuesta de los querys ingresados por el usuario
+        return view('cube.cube', array('results'=>$response));
         
         
     }
 
+    
     /**
      * Store a newly created resource in storage.
      *
