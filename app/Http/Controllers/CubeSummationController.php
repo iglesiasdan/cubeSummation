@@ -43,22 +43,17 @@ class CubeSummationController extends Controller
         }
     }
 
-
+    //this validate the query and execute them
     public function validateQuery($query,$sizeMatrix){
         $newQuery = explode(" ",$query);
         if ($newQuery[0] == 'UPDATE' ){
             if((sizeof($newQuery) == 5)){
                 if (((0 <= $newQuery[1]-1) && ($newQuery[1]-1 < $sizeMatrix)) && ((0 <= $newQuery[2]-1) && ($newQuery[2]-1 < $sizeMatrix)) && ((0 <= $newQuery[3]-1) && ($newQuery[3]-1 < $sizeMatrix)) && (($newQuery[4] >= -10000000000) && ($newQuery[4] <= 10000000000))) {
                     $this->matrix[$newQuery[1]-1][$newQuery[2]-1][$newQuery[3]-1] = $newQuery[4];
-                    //$result.push($newQuery[4]);
-                    //$this->result.=" \n ".(string)$newQuery[4];//ver como voy a guardar los datos en result
-                    //array_push($this->result,$newQuery[4]);
                 }else{
-                    //alert("error en update: "+query);
                     return -1;
                 }
             }else{
-                //alert("error en query UPDATE.!");
                 return -1;
             }
         }
@@ -73,9 +68,7 @@ class CubeSummationController extends Controller
                             }
                         }
                     }
-                    //$this->result+=$sum;//return sum;
                     array_push($this->result,$sum);
-                    //return $this->result;
                 }else{
                     
                     return -1;
