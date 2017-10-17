@@ -14,7 +14,7 @@ class CubeSummationController extends Controller
      *
      * @return Response
      */
-    private $result;
+    private $result = array();
     private $matrix;
     public function index(Request $request)
     {
@@ -45,7 +45,54 @@ class CubeSummationController extends Controller
 
 
     public function validateQuery($query,$sizeMatrix){
+        $newQuery = explode(" ",$query);
+        if ($newQuery[0] == 'UPDATE' ){
+            if((sizeof($newQuery) == 5)){
+                if (((0 <= $newQuery[1]-1) && ($newQuery[1]-1 < $sizeMatrix)) && ((0 <= $newQuery[2]-1) && ($newQuery[2]-1 < $sizeMatrix)) && ((0 <= $newQuery[3]-1) && ($newQuery[3]-1 < $sizeMatrix)) && (($newQuery[4] >= -10000000000) && ($newQuery[4] <= 10000000000))) {
+                    $this->matrix[$newQuery[1]-1][$newQuery[2]-1][$newQuery[3]-1] = $newQuery[4];
+                    //$result.push($newQuery[4]);
+                    //$this->result.=" \n ".(string)$newQuery[4];//ver como voy a guardar los datos en result
+                    //array_push($this->result,$newQuery[4]);
+                }else{
+                    //alert("error en update: "+query);
+                    return -1;
+                }
+            }else{
+                //alert("error en query UPDATE.!");
+                return -1;
+            }
+        }
+        if ($newQuery[0] == 'QUERY') {
+            if (sizeof($newQuery) == 7) {
+                $sum = 0;
+                if (((0 <= $newQuery[1]-1) && ($newQuery[1]-1 < $sizeMatrix)) && ((0 <= $newQuery[2]-1) && ($newQuery[2]-1 < $sizeMatrix)) && ((0 <= $newQuery[3]-1) && ($newQuery[3]-1 < $sizeMatrix)) && (($newQuery[4] >= -10000000000) && ($newQuery[4] <= 10000000000))) {
+                    for ($index = $newQuery[1]-1; $index < $newQuery[4]; $index++) {
+                        for ($index1 = $newQuery[2]-1; $index1 < $newQuery[5]; $index1++) {
+                            for ($index2 = $newQuery[3]-1; $index2 < $newQuery[6]; $index2++) {
+                                $sum += (integer)$this->matrix[$index][$index1][$index2];
+                            }
+                        }
+                    }
+                    //$this->result+=$sum;//return sum;
+                    array_push($this->result,$sum);
+                    //return $this->result;
+                }else{
+                    
+                    return -1;
+                }
+            }else{
+                
+                return -1;
+            }   
+        }
+    }
 
+    public function eliminateNumQuery ($query){
+        $newQuery='';
+        for ($i=1; $i < sizeof($query); $i++) { 
+            $newQuery[$i-1] = $query[$i];
+        }
+        return $newQuery;
     }
 
     //this obtains input and validate the structure and call other functions to do cubeSumation
@@ -56,14 +103,18 @@ class CubeSummationController extends Controller
         $nCases = (integer)$info[0];
         if (1 <= $nCases && is_int($nCases)){
             $acum = 0;
-            $nuevaCadena = str_replace("",$info[0],$query);
-            $nuevaCadena = explode("\n",$nuevaCadena);
+            //$nuevaCadena = substr($query,1);
+            $nuevaCadena = $info;
+            (string)$nuevaCadena[0]=" ";
+            //$nuevaCadena = explode("\n",$nuevaCadena);
+            //return $nuevaCadena[1];
             for ($i=0,$index=0,$newIndex=0; $index < $nCases; $index++) { 
                 if ($newIndex <= 1000) {
                     if ($index == 0) {
                         $aux = explode(" ",$nuevaCadena[1]);
                         $nQuerys = (integer)$aux[1];
                         $newIndex = 2 + $nQuerys;
+                        //return (string)$newIndex;
                     }else{
                         if ($nuevaCadena[$newIndex]) {
                             $aux = explode(" ",$nuevaCadena[$newIndex]);
@@ -79,9 +130,11 @@ class CubeSummationController extends Controller
             if (sizeof($info) != $newIndex) {
                 return "La cantidad de querys no coincide con el formato ingresado";
             }
-
-            $nuevaCadena = str_replace("",$info[0],$query);
-            $nuevaCadena = explode("\n",$nuevaCadena);
+            
+            $nuevaCadena = $info;
+            (string)$nuevaCadena[0] = " ";
+            // return $nuevaCadena[0];
+            //$nuevaCadena = explode("\n",$nuevaCadena);
             for ($index = 0; $index < sizeof($nuevaCadena); $index++) {
                 if ($index == 0) {
                     $aux = explode(" ",$nuevaCadena[1]);
@@ -89,22 +142,24 @@ class CubeSummationController extends Controller
                     $sizeMatrix = (integer)$aux[0];
                 }
                 $verif = explode(" ",$nuevaCadena[$index]);
-                if (!is_int((integer)$verif[0])) {
+                if (!intval((integer)$verif[0])) {
+                    //return "si entro";
                    $validation =  $this->validateQuery($nuevaCadena[$index],$sizeMatrix);
                    if ($validation == -1) {
-                       return -1;
+                       return "error en validation";
                    }
                 }else{
                     $aux = explode(" ",$nuevaCadena[$index]);
                     $nQuerys = (integer)$aux[1];
                     $sizeMatrix = (integer)$aux[0];
                     if ($sizeMatrix>100 || $sizeMatrix<1) {
-                        return "Tamano de matriz invalido";
+
+                        return "Tamano de matriz invalido".(string)$aux[0];
                     }
-                    initMatrix($sizeMatrix);
+                    $this->initMatrix($sizeMatrix);
                 }
             }
-            return $result;
+            return $this->result;
 
 
         }
@@ -122,7 +177,8 @@ class CubeSummationController extends Controller
         $query = $request->get('query');
         $response = $this->summation($query);
         //response es el valor de la respuesta de los querys ingresados por el usuario
-        return view('cube.cube', array('results'=>$response));
+        //print_r($response);
+        return view('cube.cube', array('results'=>implode("\n ",$response)));
         
         
     }
