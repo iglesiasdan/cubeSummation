@@ -87,13 +87,7 @@ class CubeSummationController extends Controller
         }
     }
 
-    public function eliminateNumQuery ($query){
-        $newQuery='';
-        for ($i=1; $i < sizeof($query); $i++) { 
-            $newQuery[$i-1] = $query[$i];
-        }
-        return $newQuery;
-    }
+
 
     //this obtains input and validate the structure and call other functions to do cubeSumation
     public function summation($query){
@@ -103,18 +97,14 @@ class CubeSummationController extends Controller
         $nCases = (integer)$info[0];
         if (1 <= $nCases && is_int($nCases)){
             $acum = 0;
-            //$nuevaCadena = substr($query,1);
             $nuevaCadena = $info;
             (string)$nuevaCadena[0]=" ";
-            //$nuevaCadena = explode("\n",$nuevaCadena);
-            //return $nuevaCadena[1];
             for ($i=0,$index=0,$newIndex=0; $index < $nCases; $index++) { 
                 if ($newIndex <= 1000) {
                     if ($index == 0) {
                         $aux = explode(" ",$nuevaCadena[1]);
                         $nQuerys = (integer)$aux[1];
                         $newIndex = 2 + $nQuerys;
-                        //return (string)$newIndex;
                     }else{
                         if ($nuevaCadena[$newIndex]) {
                             $aux = explode(" ",$nuevaCadena[$newIndex]);
@@ -133,8 +123,6 @@ class CubeSummationController extends Controller
             
             $nuevaCadena = $info;
             (string)$nuevaCadena[0] = " ";
-            // return $nuevaCadena[0];
-            //$nuevaCadena = explode("\n",$nuevaCadena);
             for ($index = 0; $index < sizeof($nuevaCadena); $index++) {
                 if ($index == 0) {
                     $aux = explode(" ",$nuevaCadena[1]);
@@ -143,7 +131,6 @@ class CubeSummationController extends Controller
                 }
                 $verif = explode(" ",$nuevaCadena[$index]);
                 if (!intval((integer)$verif[0])) {
-                    //return "si entro";
                    $validation =  $this->validateQuery($nuevaCadena[$index],$sizeMatrix);
                    if ($validation == -1) {
                        return "error en validation";
@@ -176,8 +163,6 @@ class CubeSummationController extends Controller
     {
         $query = $request->get('query');
         $response = $this->summation($query);
-        //response es el valor de la respuesta de los querys ingresados por el usuario
-        //print_r($response);
         return view('cube.cube', array('results'=>implode("\n ",$response)));
         
         
@@ -191,13 +176,7 @@ class CubeSummationController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        
-        // $query = $request->query;
-        
-        // return view('cube.cube', ['results' => $query]);
-       // $position = $request->query;
-       //redirect(Request::url());
+
 
     }
 
