@@ -14,6 +14,8 @@ class CubeSummationController extends Controller
      *
      * @return Response
      */
+    private $result;
+    private $matrix;
     public function index(Request $request)
     {
         //
@@ -21,6 +23,29 @@ class CubeSummationController extends Controller
             
             return view('cube.cube', ['results' => '']);
         
+    }
+
+    //this initialize the matrix
+    public function initMatrix($sizeMatrix){
+        $this->matrix = array();
+        if (1 <= $sizeMatrix && $sizeMatrix <= 100) {
+            for ($index = 0; $index < $sizeMatrix; $index++) {
+                $this->matrix[$index] = array();
+                for ($index1 = 0; $index1 < $sizeMatrix; $index1++) {
+                    $this->matrix[$index][$index1] = array();
+                    for ($index2 = 0; $index2 < $sizeMatrix; $index2++) {
+                        $this->matrix[$index][$index1][$index2] = 0;
+                    } 
+                }
+            }
+        }else{
+            return "error en el tamano de la matriz";
+        }
+    }
+
+
+    public function validateQuery($query,$sizeMatrix){
+
     }
 
     //this obtains input and validate the structure and call other functions to do cubeSumation
@@ -51,9 +76,39 @@ class CubeSummationController extends Controller
                     return "La cantidad de querys no puede ser mayor a 1000"; 
                 }
             }
-            return $nuevaCadena[0];
+            if (sizeof($info) != $newIndex) {
+                return "La cantidad de querys no coincide con el formato ingresado";
+            }
+
+            $nuevaCadena = str_replace("",$info[0],$query);
+            $nuevaCadena = explode("\n",$nuevaCadena);
+            for ($index = 0; $index < sizeof($nuevaCadena); $index++) {
+                if ($index == 0) {
+                    $aux = explode(" ",$nuevaCadena[1]);
+                    $nQuerys = (integer)$aux[1];
+                    $sizeMatrix = (integer)$aux[0];
+                }
+                $verif = explode(" ",$nuevaCadena[$index]);
+                if (!is_int((integer)$verif[0])) {
+                   $validation =  $this->validateQuery($nuevaCadena[$index],$sizeMatrix);
+                   if ($validation == -1) {
+                       return -1;
+                   }
+                }else{
+                    $aux = explode(" ",$nuevaCadena[$index]);
+                    $nQuerys = (integer)$aux[1];
+                    $sizeMatrix = (integer)$aux[0];
+                    if ($sizeMatrix>100 || $sizeMatrix<1) {
+                        return "Tamano de matriz invalido";
+                    }
+                    initMatrix($sizeMatrix);
+                }
+            }
+            return $result;
+
+
         }
-        return $info;
+        return "Error en formato de la entrada";
 
     }
 
